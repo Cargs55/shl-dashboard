@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHL (Sonic Healthcare) Analysis Dashboard | ASX Stock Research</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <style>
+        :root {
+            --theme-primary: #10b981;
+            --theme-secondary: #059669;
+            --theme-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a2235;
+            --bg-hover: #243049;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --border-color: #1e293b;
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo-section h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--theme-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-section p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .stock-ticker {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--bg-card);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .ticker-price {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .ticker-change {
+            font-size: 14px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .ticker-change.positive { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .ticker-change.negative { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+
+        .last-update {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        /* Company Overview Banner */
+        .company-banner {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 32px;
+        }
+
+        .company-info h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--theme-primary);
+        }
+
+        .company-info p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .company-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .meta-item {
+            background: var(--bg-secondary);
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .meta-item label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .meta-item span {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Valuation Banner */
+        .valuation-banner {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .valuation-info h3 {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .valuation-info .fair-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent-green);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .valuation-info .discount {
+            font-size: 18px;
+            color: var(--accent-green);
+            margin-top: 4px;
+        }
+
+        .rating-badges {
+            display: flex;
+            gap: 16px;
+        }
+
+        .rating-badge {
+            text-align: center;
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border-radius: 12px;
+        }
+
+        .rating-badge label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .rating-badge .value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .stars { color: #fbbf24; }
+
+        /* Business Cycle Banner */
+        .cycle-banner {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cycle-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-warning);
+        }
+
+        .cycle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .cycle-title h3 {
+            font-size: 20px;
+            color: var(--accent-yellow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cycle-title p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .cycle-phase {
+            background: rgba(245, 158, 11, 0.15);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+
+        .cycle-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .cycle-detail-card {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 10px;
+        }
+
+        .cycle-detail-card h4 {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .cycle-detail-card p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Institutional Rotation Banner */
+        .rotation-banner {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rotation-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-success);
+        }
+
+        .rotation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .rotation-title h3 {
+            font-size: 20px;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rotation-outlook {
+            background: rgba(16, 185, 129, 0.15);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        .rotation-factors {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .factor-card {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .factor-card .icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .factor-card h4 {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .factor-card .status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .factor-card .status.positive { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .factor-card .status.neutral { background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); }
+        .factor-card .status.negative { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+
+        /* Green Flag Analysis Section */
+        .greenflags-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .overall-score {
+            background: var(--bg-card);
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .overall-score span {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .greenflags-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .statement-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .statement-card h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .metric-row:last-child { border-bottom: none; }
+
+        .metric-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .metric-value {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-value span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .status-badge.pass { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .status-badge.fail { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+        .status-badge.warn { background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); }
+
+        /* Financial Charts Grid */
+        .charts-section {
+            margin-bottom: 24px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-card h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        /* Key Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .metric-card label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .metric-card .value {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 8px 0 4px;
+        }
+
+        .metric-card .trend {
+            font-size: 12px;
+        }
+
+        .metric-card .trend.up { color: var(--accent-green); }
+        .metric-card .trend.down { color: var(--accent-red); }
+        .metric-card .trend.neutral { color: var(--accent-yellow); }
+
+        /* Historical Data Table */
+        .data-table-section {
+            margin-bottom: 24px;
+        }
+
+        .data-table-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 16px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table th:first-child, .data-table td:first-child {
+            text-align: left;
+            position: sticky;
+            left: 0;
+            background: var(--bg-card);
+        }
+
+        .data-table th:first-child { background: var(--bg-secondary); }
+
+        .data-table tr:hover td { background: var(--bg-hover); }
+
+        .data-table td.positive { color: var(--accent-green); }
+        .data-table td.negative { color: var(--accent-red); }
+
+        /* Analyst Summary */
+        .analyst-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .analyst-section h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .analyst-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .analyst-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .analyst-card h4 {
+            font-size: 14px;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analyst-card.bears h4 { color: var(--accent-red); }
+
+        .analyst-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .analyst-card li {
+            padding: 8px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .analyst-card li:last-child { border-bottom: none; }
+
+        .analyst-card li::before {
+            content: '>';
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .analyst-card.bears li::before { color: var(--accent-red); }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 32px;
+        }
+
+        footer a {
+            color: var(--theme-primary);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .greenflags-grid { grid-template-columns: 1fr; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+            .rotation-factors { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .company-banner { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .analyst-content { grid-template-columns: 1fr; }
+            .valuation-banner { flex-direction: column; gap: 20px; text-align: center; }
+            .rating-badges { justify-content: center; }
+            .cycle-details { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header>
+            <div class="logo-section">
+                <h1>Sonic Healthcare (SHL.AX)</h1>
+                <p>Comprehensive Fundamental Analysis Dashboard</p>
+            </div>
+            <div class="stock-ticker">
+                <div>
+                    <div class="ticker-price" id="currentPrice">$23.67</div>
+                    <div class="ticker-change positive" id="priceChange">+$0.34 (+1.46%)</div>
+                </div>
+            </div>
+            <div class="last-update" id="lastUpdate">Data as of: Jan 22, 2026</div>
+        </header>
+
+        <!-- Company Overview -->
+        <div class="company-banner">
+            <div class="company-info">
+                <h2>About Sonic Healthcare</h2>
+                <p>Sonic Healthcare is a global healthcare diagnostics company with leading positions in pathology/laboratory medicine in Australia, Germany, Switzerland, UK, and USA. The company operates a "medical leadership" model that recognizes the importance of the referring doctor, differentiating itself on service levels. With 3-4% organic volume growth in its core laboratories segment, Sonic benefits from population growth, aging demographics, and wider adoption of preventative diagnostics.</p>
+            </div>
+            <div class="company-meta">
+                <div class="meta-item">
+                    <label>Market Cap</label>
+                    <span>$11.68B AUD</span>
+                </div>
+                <div class="meta-item">
+                    <label>Sector</label>
+                    <span>Healthcare</span>
+                </div>
+                <div class="meta-item">
+                    <label>Industry</label>
+                    <span>Diagnostics & Research</span>
+                </div>
+                <div class="meta-item">
+                    <label>52-Week Range</label>
+                    <span>$20.50 - $29.24</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Valuation Banner -->
+        <div class="valuation-banner">
+            <div class="valuation-info">
+                <h3>Morningstar Fair Value Estimate</h3>
+                <div class="fair-value">$33.00 AUD</div>
+                <div class="discount">28% Discount to Fair Value (Undervalued)</div>
+            </div>
+            <div class="rating-badges">
+                <div class="rating-badge">
+                    <label>Star Rating</label>
+                    <div class="value stars">5-Star</div>
+                </div>
+                <div class="rating-badge">
+                    <label>Economic Moat</label>
+                    <div class="value" style="color: var(--accent-yellow);">Narrow</div>
+                </div>
+                <div class="rating-badge">
+                    <label>Uncertainty</label>
+                    <div class="value" style="color: var(--accent-blue);">Medium</div>
+                </div>
+                <div class="rating-badge">
+                    <label>Capital Allocation</label>
+                    <div class="value" style="color: var(--text-secondary);">Standard</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Cycle Analysis -->
+        <div class="cycle-banner">
+            <div class="cycle-header">
+                <div class="cycle-title">
+                    <h3>Business Cycle Position</h3>
+                    <p>Healthcare Diagnostics Sector Analysis</p>
+                </div>
+                <div class="cycle-phase">MID-CYCLE RECOVERY</div>
+            </div>
+            <div class="cycle-details">
+                <div class="cycle-detail-card">
+                    <h4>Current Phase Assessment</h4>
+                    <p>Healthcare diagnostics is in mid-cycle recovery following post-COVID normalization. Base testing volumes have stabilized, while aging demographics and preventative healthcare trends support long-term growth. COVID testing tailwind has fully unwound, creating a normalized earnings base for forward comparisons.</p>
+                </div>
+                <div class="cycle-detail-card">
+                    <h4>Key Cycle Drivers</h4>
+                    <p>Population aging in developed markets driving test volume growth. Expansion of complex gene-based and personalized medicine tests increasing average revenue per test. Healthcare system cost pressures favor consolidated, efficient operators like Sonic with scale advantages.</p>
+                </div>
+                <div class="cycle-detail-card">
+                    <h4>Cycle Outlook (12-18 Months)</h4>
+                    <p>Expect continued recovery in base margins as cost efficiencies materialize. Recent acquisitions (Cepheid, SYNLAB Australia) positioned to drive synergies. Diagnostic imaging segment expanding with higher-margin modalities. Forecast 7% revenue CAGR through FY2030.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Institutional Rotation Banner -->
+        <div class="rotation-banner">
+            <div class="rotation-header">
+                <div class="rotation-title">
+                    <h3>Institutional Rotation Outlook</h3>
+                    <p>12-18 Month Institutional Capital Flow Assessment</p>
+                </div>
+                <div class="rotation-outlook">FAVORABLE</div>
+            </div>
+            <div class="rotation-factors">
+                <div class="factor-card">
+                    <div class="icon">+</div>
+                    <h4>Defensive Characteristics</h4>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 8px 0;">Non-cyclical healthcare demand</p>
+                    <span class="status positive">Positive</span>
+                </div>
+                <div class="factor-card">
+                    <div class="icon">$</div>
+                    <h4>Valuation Discount</h4>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 8px 0;">28% below fair value</p>
+                    <span class="status positive">Attractive</span>
+                </div>
+                <div class="factor-card">
+                    <div class="icon">%</div>
+                    <h4>Dividend Yield</h4>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 8px 0;">4.59% TTM yield</p>
+                    <span class="status positive">Strong</span>
+                </div>
+                <div class="factor-card">
+                    <div class="icon">~</div>
+                    <h4>Earnings Momentum</h4>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 8px 0;">Post-COVID normalization</p>
+                    <span class="status neutral">Stabilizing</span>
+                </div>
+            </div>
+            <div style="margin-top: 20px; padding: 16px; background: var(--bg-secondary); border-radius: 10px;">
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+                    <strong style="color: var(--accent-green);">Institutional Appeal:</strong>
+                    SHL presents as an attractive defensive holding for institutional portfolios seeking healthcare exposure with reliable dividends.
+                    The significant discount to fair value (28%) and 4.59% dividend yield create compelling entry points.
+                    Healthcare sector rotation typically favors quality defensive names during economic uncertainty or late-cycle positioning.
+                    Global aging demographics provide structural tailwind, while narrow moat from scale advantages offers downside protection.
+                    <br><br>
+                    <strong style="color: var(--accent-yellow);">Considerations:</strong>
+                    ROE compression from 21.99% (FY21) to 6.32% (FY25) reflects COVID-era earnings normalization rather than structural decline.
+                    Debt/Equity increase to 0.57x remains manageable given low revenue cyclicality and strong cash conversion.
+                </p>
+            </div>
+        </div>
+
+        <!-- Green Flag Analysis -->
+        <div class="greenflags-section">
+            <div class="section-header">
+                <h2>Financial Statement Green Flags Analysis</h2>
+                <div class="overall-score">
+                    Overall Score: <span style="color: var(--accent-yellow);">15/30</span> (Mixed)
+                </div>
+            </div>
+            <div class="greenflags-grid">
+                <!-- Income Statement -->
+                <div class="statement-card">
+                    <h3>Income Statement (5/10)</h3>
+                    <div class="metric-row">
+                        <span class="metric-name">Revenue Growth YoY > 10%</span>
+                        <div class="metric-value">
+                            <span>7.67%</span>
+                            <div class="status-badge fail">X</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Gross Margin > 40%</span>
+                        <div class="metric-value">
+                            <span>83.76%</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Net Profit Margin > 10%</span>
+                        <div class="metric-value">
+                            <span>5.65%</span>
+                            <div class="status-badge fail">X</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Operating Margin > 15%</span>
+                        <div class="metric-value">
+                            <span>9.41%</span>
+                            <div class="status-badge fail">X</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">EPS Growth YoY > 10%</span>
+                        <div class="metric-value">
+                            <span>-0.47%</span>
+                            <div class="status-badge fail">X</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">SG&A as % Revenue < 20%</span>
+                        <div class="metric-value">
+                            <span>~49%</span>
+                            <div class="status-badge fail">X</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Interest Expense/EBIT < 20%</span>
+                        <div class="metric-value">
+                            <span>13.6%</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">ROE > 15%</span>
+                        <div class="metric-value">
+                            <span>6.32%</span>
+                            <div class="status-badge fail">X</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">ROA > 7%</span>
+                        <div class="metric-value">
+                            <span>2.71%</span>
+                            <div class="status-badge fail">X</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">EBITDA Margin > 15%</span>
+                        <div class="metric-value">
+                            <span>17.93%</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Balance Sheet -->
+                <div class="statement-card">
+                    <h3>Balance Sheet (6/10)</h3>
+                    <div class="metric-row">
+                        <span class="metric-name">Current Ratio > 1.5</span>
+                        <div class="metric-value">
+                            <span>1.17</span>
+                            <div class="status-badge warn">~</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Quick Ratio > 1.0</span>
+                        <div class="metric-value">
+                            <span>0.98</span>
+                            <div class="status-badge warn">~</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Debt/Equity < 1.0</span>
+                        <div class="metric-value">
+                            <span>0.57</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Interest Coverage > 3x</span>
+                        <div class="metric-value">
+                            <span>7.33x</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Working Capital Positive</span>
+                        <div class="metric-value">
+                            <span>$380M</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Inventory Turnover > 5x</span>
+                        <div class="metric-value">
+                            <span>4.85x</span>
+                            <div class="status-badge warn">~</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Receivables Days < 45</span>
+                        <div class="metric-value">
+                            <span>51.2 days</span>
+                            <div class="status-badge warn">~</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Book Value Growing</span>
+                        <div class="metric-value">
+                            <span>$17.33</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Tangible Net Worth Positive</span>
+                        <div class="metric-value">
+                            <span>$8.47B</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Financial Leverage < 2.5</span>
+                        <div class="metric-value">
+                            <span>1.93</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cash Flow Statement -->
+                <div class="statement-card">
+                    <h3>Cash Flow Statement (4/10)</h3>
+                    <div class="metric-row">
+                        <span class="metric-name">Operating Cash Flow Positive</span>
+                        <div class="metric-value">
+                            <span>$1.30B</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Free Cash Flow Positive</span>
+                        <div class="metric-value">
+                            <span>$834M</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">OCF Growing YoY</span>
+                        <div class="metric-value">
+                            <span>+21.02%</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">FCF/Sales > 10%</span>
+                        <div class="metric-value">
+                            <span>8.67%</span>
+                            <div class="status-badge warn">~</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">CapEx Investing Steadily</span>
+                        <div class="metric-value">
+                            <span>4.81% of Rev</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Minimal New Debt</span>
+                        <div class="metric-value">
+                            <span>D/E 0.57</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">OCF/Net Income > 1.0</span>
+                        <div class="metric-value">
+                            <span>2.54x</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Cash Flow Margin > 10%</span>
+                        <div class="metric-value">
+                            <span>13.5%</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Dividend Coverage > 2x</span>
+                        <div class="metric-value">
+                            <span>1.0x</span>
+                            <div class="status-badge fail">X</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Interest Coverage (Cash) > 5x</span>
+                        <div class="metric-value">
+                            <span>7.7x</span>
+                            <div class="status-badge pass">+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Summary -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <label>Revenue (FY25)</label>
+                <div class="value">$9.62B</div>
+                <div class="trend up">+7.67% YoY</div>
+            </div>
+            <div class="metric-card">
+                <label>Net Income (FY25)</label>
+                <div class="value">$510M</div>
+                <div class="trend neutral">+0.49% YoY</div>
+            </div>
+            <div class="metric-card">
+                <label>EPS (FY25)</label>
+                <div class="value">$1.07</div>
+                <div class="trend down">-0.47% YoY</div>
+            </div>
+            <div class="metric-card">
+                <label>Dividend/Share</label>
+                <div class="value">$1.07</div>
+                <div class="trend up">+1.90% YoY</div>
+            </div>
+            <div class="metric-card">
+                <label>P/E Ratio</label>
+                <div class="value">22.1x</div>
+                <div class="trend neutral">vs 5yr avg 17.6x</div>
+            </div>
+            <div class="metric-card">
+                <label>Dividend Yield</label>
+                <div class="value">4.59%</div>
+                <div class="trend up">Above Average</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="section-header">
+                <h2>Financial Trends (FY2016-FY2025)</h2>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Revenue & Net Income ($M)</h3>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Profitability Margins (%)</h3>
+                    <div class="chart-container">
+                        <canvas id="marginChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Return Metrics (%)</h3>
+                    <div class="chart-container">
+                        <canvas id="returnChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Financial Health Ratios</h3>
+                    <div class="chart-container">
+                        <canvas id="healthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historical Data Table -->
+        <div class="data-table-section">
+            <div class="section-header">
+                <h2>Historical Financial Summary</h2>
+            </div>
+            <div class="data-table-card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>FY2019</th>
+                            <th>FY2020</th>
+                            <th>FY2021</th>
+                            <th>FY2022</th>
+                            <th>FY2023</th>
+                            <th>FY2024</th>
+                            <th>FY2025</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Revenue ($M)</td>
+                            <td>6,130</td>
+                            <td>6,780</td>
+                            <td>8,750</td>
+                            <td>9,320</td>
+                            <td>8,140</td>
+                            <td>8,930</td>
+                            <td>9,620</td>
+                        </tr>
+                        <tr>
+                            <td>Revenue Growth (%)</td>
+                            <td class="positive">+11.87%</td>
+                            <td class="positive">+10.72%</td>
+                            <td class="positive">+29.04%</td>
+                            <td class="positive">+6.49%</td>
+                            <td class="negative">-12.61%</td>
+                            <td class="positive">+9.69%</td>
+                            <td class="positive">+7.67%</td>
+                        </tr>
+                        <tr>
+                            <td>Net Income ($M)</td>
+                            <td>550</td>
+                            <td>530</td>
+                            <td>1,320</td>
+                            <td>1,460</td>
+                            <td>680</td>
+                            <td>510</td>
+                            <td>510</td>
+                        </tr>
+                        <tr>
+                            <td>Net Margin (%)</td>
+                            <td>9.13%</td>
+                            <td>7.99%</td>
+                            <td class="positive">15.40%</td>
+                            <td class="positive">16.26%</td>
+                            <td>8.69%</td>
+                            <td>6.09%</td>
+                            <td>5.65%</td>
+                        </tr>
+                        <tr>
+                            <td>EBITDA ($M)</td>
+                            <td>1,000</td>
+                            <td>1,280</td>
+                            <td>2,440</td>
+                            <td>2,830</td>
+                            <td>1,600</td>
+                            <td>1,460</td>
+                            <td>1,720</td>
+                        </tr>
+                        <tr>
+                            <td>EPS ($)</td>
+                            <td>1.22</td>
+                            <td>1.11</td>
+                            <td class="positive">2.73</td>
+                            <td class="positive">3.03</td>
+                            <td>1.45</td>
+                            <td>1.07</td>
+                            <td>1.07</td>
+                        </tr>
+                        <tr>
+                            <td>ROE (%)</td>
+                            <td>11.46%</td>
+                            <td>9.61%</td>
+                            <td class="positive">21.99%</td>
+                            <td class="positive">21.39%</td>
+                            <td>9.13%</td>
+                            <td>6.53%</td>
+                            <td>6.32%</td>
+                        </tr>
+                        <tr>
+                            <td>ROIC (%)</td>
+                            <td>5.75%</td>
+                            <td>4.90%</td>
+                            <td class="positive">11.11%</td>
+                            <td class="positive">13.02%</td>
+                            <td>6.08%</td>
+                            <td>4.38%</td>
+                            <td>4.08%</td>
+                        </tr>
+                        <tr>
+                            <td>Debt/Equity</td>
+                            <td>0.82</td>
+                            <td>1.22</td>
+                            <td class="positive">0.67</td>
+                            <td class="positive">0.58</td>
+                            <td>0.57</td>
+                            <td>0.83</td>
+                            <td>0.57</td>
+                        </tr>
+                        <tr>
+                            <td>Dividend/Share ($)</td>
+                            <td>0.82</td>
+                            <td>0.85</td>
+                            <td>0.87</td>
+                            <td>0.95</td>
+                            <td>1.02</td>
+                            <td>1.05</td>
+                            <td>1.07</td>
+                        </tr>
+                        <tr>
+                            <td>Book Value/Share ($)</td>
+                            <td>10.33</td>
+                            <td>11.40</td>
+                            <td>12.20</td>
+                            <td>14.96</td>
+                            <td>15.70</td>
+                            <td>16.05</td>
+                            <td>17.06</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Analyst Bulls/Bears -->
+        <div class="analyst-section">
+            <h3>Morningstar Analyst View</h3>
+            <div class="analyst-content">
+                <div class="analyst-card bulls">
+                    <h4>Bulls Say</h4>
+                    <ul>
+                        <li>Leading market position in most geographies provides cost advantage derived from scale</li>
+                        <li>Demographic factors and focus on value-based healthcare support global volume growth in preventative diagnostics</li>
+                        <li>Advances in technology increasing complex gene-based tests which are typically higher-margin</li>
+                        <li>Flexible operating capacity by adjusting laboratory operating hours</li>
+                        <li>Strong cash conversion and consistent dividend payout history</li>
+                    </ul>
+                </div>
+                <div class="analyst-card bears">
+                    <h4>Bears Say</h4>
+                    <ul>
+                        <li>Elevated COVID-19 testing cannot be maintained; acquisitive growth becoming more expensive</li>
+                        <li>Regulatory reimbursement pressure could increase in US if hospital labs fail PAMA compliance</li>
+                        <li>Typical ROICs of ~9% are only slightly above the 7% WACC - narrow value creation spread</li>
+                        <li>Risk of overpaying for acquisitions and destroying shareholder value</li>
+                        <li>ESG risks related to lab technology failures and data security</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>SHL Analysis Dashboard | Data sourced from Morningstar Investor & Company Filings</p>
+            <p style="margin-top: 8px;">This dashboard is for informational purposes only and does not constitute financial advice.</p>
+            <p style="margin-top: 8px;">Last Updated: January 22, 2026 | <a href="https://github.com/davidcargill" target="_blank">View on GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Chart configurations
+        const chartColors = {
+            green: '#10b981',
+            yellow: '#f59e0b',
+            blue: '#3b82f6',
+            purple: '#8b5cf6',
+            red: '#ef4444',
+            gray: '#64748b'
+        };
+
+        const years = ['FY16', 'FY17', 'FY18', 'FY19', 'FY20', 'FY21', 'FY22', 'FY23', 'FY24', 'FY25'];
+
+        // Revenue & Net Income Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'Revenue',
+                        data: [4980, 5050, 5480, 6130, 6780, 8750, 9320, 8140, 8930, 9620],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: chartColors.green,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Net Income',
+                        data: [450, 430, 480, 550, 530, 1320, 1460, 680, 510, 510],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: chartColors.blue,
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                scales: {
+                    x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
+
+        // Margin Chart
+        const marginCtx = document.getElementById('marginChart').getContext('2d');
+        new Chart(marginCtx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'Gross Margin',
+                        data: [83.71, 83.71, 83.23, 83.75, 83.53, 81.53, 82.79, 84.29, 83.75, 83.76],
+                        borderColor: chartColors.green,
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'EBITDA Margin',
+                        data: [17.67, 17.19, 17.32, 16.25, 18.81, 27.87, 30.37, 19.60, 16.31, 17.93],
+                        borderColor: chartColors.blue,
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Net Margin',
+                        data: [9.35, 8.75, 8.86, 9.13, 7.99, 15.40, 16.26, 8.69, 6.09, 5.65],
+                        borderColor: chartColors.yellow,
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                scales: {
+                    x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
+
+        // Return Metrics Chart
+        const returnCtx = document.getElementById('returnChart').getContext('2d');
+        new Chart(returnCtx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'ROE',
+                        data: [12.98, 11.42, 11.88, 11.46, 9.61, 21.99, 21.39, 9.13, 6.53, 6.32],
+                        borderColor: chartColors.green,
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'ROIC',
+                        data: [6.05, 6.16, 6.50, 5.75, 4.90, 11.11, 13.02, 6.08, 4.38, 4.08],
+                        borderColor: chartColors.purple,
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'ROA',
+                        data: [4.17, 4.39, 6.31, 4.89, 3.21, 7.64, 8.39, 3.74, 2.53, 2.71],
+                        borderColor: chartColors.yellow,
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                scales: {
+                    x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
+
+        // Financial Health Chart
+        const healthCtx = document.getElementById('healthChart').getContext('2d');
+        new Chart(healthCtx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'Current Ratio',
+                        data: [0.61, 0.81, 0.96, 0.57, 0.80, 0.68, 0.79, 0.80, 0.83, 1.17],
+                        borderColor: chartColors.blue,
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Debt/Equity',
+                        data: [1.15, 0.54, 1.34, 0.82, 1.22, 0.67, 0.58, 0.57, 0.83, 0.57],
+                        borderColor: chartColors.red,
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Interest Coverage (x10)',
+                        data: [0.99, 0.95, 0.89, 0.94, 0.72, 2.08, 2.70, 1.17, 0.58, 0.73],
+                        borderColor: chartColors.green,
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                scales: {
+                    x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

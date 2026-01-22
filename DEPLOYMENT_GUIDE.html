@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SHL Dashboard Deployment Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1 {
+            color: #10b981;
+            border-bottom: 3px solid #10b981;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #059669;
+            margin-top: 30px;
+            border-left: 4px solid #10b981;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #047857;
+            margin-top: 20px;
+        }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+        }
+        pre {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+        }
+        .step-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        ol, ul {
+            margin: 15px 0;
+        }
+        li {
+            margin: 8px 0;
+        }
+        a {
+            color: #10b981;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #f3f4f6;
+        }
+        .screenshot-placeholder {
+            background: #e5e7eb;
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            color: #6b7280;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>SHL Dashboard Deployment Guide</h1>
+    <p><strong>Document Version:</strong> 1.0<br>
+    <strong>Created:</strong> January 22, 2026<br>
+    <strong>Purpose:</strong> Step-by-step instructions to deploy the Sonic Healthcare (SHL) Analysis Dashboard to GitHub and Vercel</p>
+
+    <h2>Prerequisites</h2>
+    <ul>
+        <li>A GitHub account (free tier is sufficient)</li>
+        <li>A Vercel account (free tier is sufficient - can sign up with GitHub)</li>
+        <li>Web browser (Chrome, Safari, Firefox, or Edge)</li>
+        <li>The <code>index.html</code> dashboard file located at:
+            <pre>/Users/davidcargill/Library/CloudStorage/Dropbox/Side Mission Control/Stocks, Shares, ETF, Commodities/Research/Sonic Health Care/shl-dashboard/index.html</pre>
+        </li>
+    </ul>
+
+    <h2>Part 1: Create GitHub Repository</h2>
+
+    <div class="step-box">
+        <h3>Step 1.1: Sign in to GitHub</h3>
+        <ol>
+            <li>Open your web browser and go to <a href="https://github.com">https://github.com</a></li>
+            <li>Sign in with your GitHub credentials</li>
+            <li>If you don't have an account, click "Sign up" and follow the registration process</li>
+        </ol>
+    </div>
+
+    <div class="step-box">
+        <h3>Step 1.2: Create a New Repository</h3>
+        <ol>
+            <li>Click the <strong>+</strong> icon in the top right corner of GitHub</li>
+            <li>Select <strong>"New repository"</strong> from the dropdown</li>
+            <li>Fill in the repository details:
+                <table>
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Repository name</td>
+                        <td><code>shl-dashboard</code></td>
+                    </tr>
+                    <tr>
+                        <td>Description</td>
+                        <td><code>Sonic Healthcare (SHL.AX) Financial Analysis Dashboard</code></td>
+                    </tr>
+                    <tr>
+                        <td>Visibility</td>
+                        <td><strong>Public</strong> (required for free Vercel hosting)</td>
+                    </tr>
+                    <tr>
+                        <td>Initialize with README</td>
+                        <td>Leave <strong>unchecked</strong></td>
+                    </tr>
+                </table>
+            </li>
+            <li>Click <strong>"Create repository"</strong></li>
+        </ol>
+    </div>
+
+    <div class="step-box">
+        <h3>Step 1.3: Upload the Dashboard File</h3>
+        <ol>
+            <li>On your new repository page, click <strong>"uploading an existing file"</strong> (in the quick setup section)</li>
+            <li>Drag and drop the <code>index.html</code> file from:
+                <pre>Dropbox/Side Mission Control/Stocks, Shares, ETF, Commodities/Research/Sonic Health Care/shl-dashboard/</pre>
+            </li>
+            <li>Alternatively, click <strong>"choose your files"</strong> and navigate to select the file</li>
+            <li>In the "Commit changes" section at the bottom:
+                <ul>
+                    <li>Commit message: <code>Initial SHL dashboard deployment</code></li>
+                </ul>
+            </li>
+            <li>Click <strong>"Commit changes"</strong></li>
+        </ol>
+    </div>
+
+    <div class="info-box">
+        <strong>Note:</strong> Your repository should now contain one file: <code>index.html</code>. The URL will be something like: <code>https://github.com/YOUR_USERNAME/shl-dashboard</code>
+    </div>
+
+    <h2>Part 2: Deploy to Vercel</h2>
+
+    <div class="step-box">
+        <h3>Step 2.1: Sign up/Sign in to Vercel</h3>
+        <ol>
+            <li>Go to <a href="https://vercel.com">https://vercel.com</a></li>
+            <li>Click <strong>"Sign Up"</strong> or <strong>"Log In"</strong></li>
+            <li>Select <strong>"Continue with GitHub"</strong> (recommended - this links your accounts)</li>
+            <li>Authorize Vercel to access your GitHub account when prompted</li>
+        </ol>
+    </div>
+
+    <div class="step-box">
+        <h3>Step 2.2: Import Your GitHub Repository</h3>
+        <ol>
+            <li>Once logged in, click <strong>"Add New..."</strong> button</li>
+            <li>Select <strong>"Project"</strong></li>
+            <li>You'll see a list of your GitHub repositories</li>
+            <li>Find <strong>shl-dashboard</strong> and click <strong>"Import"</strong></li>
+        </ol>
+    </div>
+
+    <div class="step-box">
+        <h3>Step 2.3: Configure Project Settings</h3>
+        <ol>
+            <li>Project Name: <code>shl-dashboard</code> (or your preferred name)</li>
+            <li>Framework Preset: Select <strong>"Other"</strong> (this is a static HTML site)</li>
+            <li>Root Directory: Leave as <strong>./</strong> (default)</li>
+            <li>Build Command: <strong>Leave empty</strong> (no build needed)</li>
+            <li>Output Directory: Leave as default or set to <strong>./</strong></li>
+            <li>Click <strong>"Deploy"</strong></li>
+        </ol>
+    </div>
+
+    <div class="step-box">
+        <h3>Step 2.4: Wait for Deployment</h3>
+        <ol>
+            <li>Vercel will build and deploy your project (takes 30-60 seconds)</li>
+            <li>You'll see a success message with confetti animation!</li>
+            <li>Your dashboard is now live!</li>
+        </ol>
+    </div>
+
+    <h2>Part 3: Access Your Dashboard</h2>
+
+    <div class="info-box">
+        <h3>Your Dashboard URL</h3>
+        <p>After deployment, your dashboard will be available at:</p>
+        <pre>https://shl-dashboard.vercel.app</pre>
+        <p>Or a URL like:</p>
+        <pre>https://shl-dashboard-YOUR_USERNAME.vercel.app</pre>
+        <p>The exact URL is shown on your Vercel project dashboard.</p>
+    </div>
+
+    <h2>Part 4: Custom Domain (Optional)</h2>
+
+    <div class="step-box">
+        <h3>Step 4.1: Add a Custom Domain</h3>
+        <ol>
+            <li>In your Vercel project dashboard, click <strong>"Settings"</strong></li>
+            <li>Navigate to <strong>"Domains"</strong></li>
+            <li>Enter your custom domain (e.g., <code>shl.yourdomain.com</code>)</li>
+            <li>Follow the DNS configuration instructions provided</li>
+        </ol>
+    </div>
+
+    <h2>Part 5: Future Updates</h2>
+
+    <div class="step-box">
+        <h3>How to Update Your Dashboard</h3>
+        <ol>
+            <li>Go to your GitHub repository: <code>https://github.com/YOUR_USERNAME/shl-dashboard</code></li>
+            <li>Click on <code>index.html</code></li>
+            <li>Click the <strong>pencil icon</strong> (Edit this file) in the top right</li>
+            <li>Make your changes in the editor</li>
+            <li>Scroll down and click <strong>"Commit changes"</strong></li>
+            <li>Vercel will automatically redeploy within 30-60 seconds!</li>
+        </ol>
+    </div>
+
+    <div class="warning-box">
+        <h3>Important Notes</h3>
+        <ul>
+            <li><strong>Auto-Deploy:</strong> Any changes pushed to GitHub will automatically trigger a new Vercel deployment</li>
+            <li><strong>Free Tier Limits:</strong> Vercel's free tier includes 100GB bandwidth/month - more than enough for personal use</li>
+            <li><strong>SSL/HTTPS:</strong> Vercel automatically provides free SSL certificates</li>
+            <li><strong>No Server Required:</strong> This is a static site - no backend maintenance needed</li>
+        </ul>
+    </div>
+
+    <h2>Troubleshooting</h2>
+
+    <table>
+        <tr>
+            <th>Issue</th>
+            <th>Solution</th>
+        </tr>
+        <tr>
+            <td>Repository not appearing in Vercel</td>
+            <td>Click "Adjust GitHub App Permissions" and grant access to the repository</td>
+        </tr>
+        <tr>
+            <td>Deployment failed</td>
+            <td>Check that your file is named exactly <code>index.html</code> (lowercase)</td>
+        </tr>
+        <tr>
+            <td>Page shows raw HTML</td>
+            <td>Ensure the file has the correct .html extension</td>
+        </tr>
+        <tr>
+            <td>Charts not loading</td>
+            <td>Check browser console for errors; ensure internet connection for CDN resources</td>
+        </tr>
+        <tr>
+            <td>Styles look broken</td>
+            <td>Clear browser cache (Cmd+Shift+R on Mac, Ctrl+Shift+R on Windows)</td>
+        </tr>
+    </table>
+
+    <h2>Quick Reference Summary</h2>
+
+    <table>
+        <tr>
+            <th>Action</th>
+            <th>URL/Location</th>
+        </tr>
+        <tr>
+            <td>GitHub Repository</td>
+            <td><code>https://github.com/YOUR_USERNAME/shl-dashboard</code></td>
+        </tr>
+        <tr>
+            <td>Vercel Dashboard</td>
+            <td><code>https://vercel.com/dashboard</code></td>
+        </tr>
+        <tr>
+            <td>Live Dashboard</td>
+            <td><code>https://shl-dashboard.vercel.app</code></td>
+        </tr>
+        <tr>
+            <td>Source File</td>
+            <td><code>Dropbox/.../Sonic Health Care/shl-dashboard/index.html</code></td>
+        </tr>
+    </table>
+
+    <h2>Dashboard Features Summary</h2>
+    <ul>
+        <li><strong>Company Overview:</strong> Key metrics, market cap, sector information</li>
+        <li><strong>Morningstar Valuation:</strong> Fair value estimate, star rating, moat assessment</li>
+        <li><strong>Business Cycle Analysis:</strong> Current phase, drivers, and 12-18 month outlook</li>
+        <li><strong>Institutional Rotation Assessment:</strong> Factors affecting institutional capital flows</li>
+        <li><strong>Green Flag Analysis:</strong> 30-point financial health scorecard (Income, Balance Sheet, Cash Flow)</li>
+        <li><strong>Interactive Charts:</strong> Revenue trends, margin analysis, return metrics, financial health</li>
+        <li><strong>Historical Data Table:</strong> 7-year financial summary</li>
+        <li><strong>Analyst Commentary:</strong> Bulls and Bears perspectives from Morningstar</li>
+    </ul>
+
+    <hr>
+    <p style="text-align: center; color: #6b7280; font-size: 12px;">
+        Document created by Claude Code | January 22, 2026<br>
+        For assistance, refer to GitHub Docs (<a href="https://docs.github.com">docs.github.com</a>) or Vercel Docs (<a href="https://vercel.com/docs">vercel.com/docs</a>)
+    </p>
+</body>
+</html>

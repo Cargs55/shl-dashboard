@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!--[if gte mso 9]>
+    <xml>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <title>SHL Dashboard - Step by Step Deployment Guide</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm;
+        }
+        body {
+            font-family: Calibri, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #333;
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 24pt;
+            color: #10b981;
+            text-align: center;
+            border-bottom: 3px solid #10b981;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-size: 16pt;
+            color: #059669;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            background-color: #f0fdf4;
+            padding: 10px 15px;
+            border-left: 5px solid #10b981;
+        }
+        h3 {
+            font-size: 13pt;
+            color: #047857;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #10b981;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .step-title {
+            font-weight: bold;
+            font-size: 12pt;
+            color: #1f2937;
+        }
+        .action-box {
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning-box {
+            background-color: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .info-box {
+            background-color: #eff6ff;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .success-box {
+            background-color: #d1fae5;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        code {
+            background-color: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            font-size: 10pt;
+        }
+        .code-block {
+            background-color: #1f2937;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 10pt;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        ol, ul {
+            margin: 10px 0 10px 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f3f4f6;
+            font-weight: bold;
+        }
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #9ca3af;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .time-estimate {
+            color: #6b7280;
+            font-style: italic;
+            font-size: 10pt;
+        }
+        .screenshot-placeholder {
+            background-color: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 30px 0;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        .toc {
+            background-color: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .toc a {
+            color: #10b981;
+            text-decoration: none;
+        }
+        .footer {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 9pt;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+
+<h1>SHL Dashboard<br>Step-by-Step Deployment Guide</h1>
+
+<div style="text-align: center; margin-bottom: 30px;">
+    <p><strong>Sonic Healthcare (ASX: SHL) Financial Analysis Dashboard</strong></p>
+    <p class="time-estimate">Total Time Required: Approximately 10-15 minutes</p>
+    <p>Document Created: January 22, 2026</p>
+</div>
+
+<div class="toc">
+    <h3 style="margin-top: 0;">Table of Contents</h3>
+    <ol>
+        <li><a href="#prereq">Prerequisites & What You Need</a></li>
+        <li><a href="#part1">Part 1: Create GitHub Account (if needed)</a></li>
+        <li><a href="#part2">Part 2: Create GitHub Repository</a></li>
+        <li><a href="#part3">Part 3: Upload Dashboard Files</a></li>
+        <li><a href="#part4">Part 4: Deploy to Vercel</a></li>
+        <li><a href="#part5">Part 5: Share Your Dashboard</a></li>
+        <li><a href="#trouble">Troubleshooting</a></li>
+    </ol>
+</div>
+
+<hr>
+
+<h2 id="prereq">Prerequisites & What You Need</h2>
+
+<div class="info-box">
+    <h3 style="margin-top: 0;">Before You Start, Ensure You Have:</h3>
+    <p><span class="checkbox"></span> A web browser (Chrome, Safari, Firefox, or Edge)</p>
+    <p><span class="checkbox"></span> An email address for account creation</p>
+    <p><span class="checkbox"></span> Access to your Dropbox folder containing the dashboard files</p>
+</div>
+
+<h3>Your Dashboard Files Location:</h3>
+<div class="code-block">
+Dropbox/Side Mission Control/Stocks, Shares, ETF, Commodities/Research/Sonic Health Care/shl-dashboard/
+</div>
+
+<p>This folder contains 3 files you will upload:</p>
+<table>
+    <tr>
+        <th>File Name</th>
+        <th>Purpose</th>
+    </tr>
+    <tr>
+        <td><code>index.html</code></td>
+        <td>The main dashboard (REQUIRED)</td>
+    </tr>
+    <tr>
+        <td><code>README.md</code></td>
+        <td>Project description for GitHub</td>
+    </tr>
+    <tr>
+        <td><code>DEPLOYMENT_GUIDE.html</code></td>
+        <td>This guide in HTML format</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="part1">Part 1: Create GitHub Account</h2>
+<p class="time-estimate">Skip this section if you already have a GitHub account</p>
+
+<div class="action-box">
+    <p><span class="step-number">1</span><span class="step-title">Open GitHub Website</span></p>
+    <ul>
+        <li>Open your web browser</li>
+        <li>Go to: <strong>https://github.com</strong></li>
+    </ul>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">2</span><span class="step-title">Click Sign Up</span></p>
+    <ul>
+        <li>Click the green <strong>"Sign up"</strong> button in the top right corner</li>
+    </ul>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">3</span><span class="step-title">Enter Your Details</span></p>
+    <ul>
+        <li><strong>Email:</strong> Enter your email address</li>
+        <li><strong>Password:</strong> Create a strong password</li>
+        <li><strong>Username:</strong> Choose a username (e.g., davidcargill)</li>
+        <li>Complete the verification puzzle</li>
+        <li>Click <strong>"Create account"</strong></li>
+    </ul>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">4</span><span class="step-title">Verify Your Email</span></p>
+    <ul>
+        <li>Check your email inbox for a verification code from GitHub</li>
+        <li>Enter the code on the GitHub page</li>
+        <li>Click <strong>"Continue"</strong> through any setup questions (you can skip personalization)</li>
+    </ul>
+</div>
+
+<div class="success-box">
+    <strong>Checkpoint:</strong> You should now be logged into GitHub and see your dashboard.
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="part2">Part 2: Create GitHub Repository</h2>
+<p class="time-estimate">Time: 2 minutes</p>
+
+<div class="action-box">
+    <p><span class="step-number">1</span><span class="step-title">Start Creating a New Repository</span></p>
+    <ul>
+        <li>Look at the top right corner of the GitHub page</li>
+        <li>Click the <strong>+ (plus)</strong> icon</li>
+        <li>Select <strong>"New repository"</strong> from the dropdown menu</li>
+    </ul>
+    <div class="screenshot-placeholder">[Screenshot: Click + icon, then "New repository"]</div>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">2</span><span class="step-title">Fill in Repository Details</span></p>
+    <p>Enter the following information exactly:</p>
+    <table>
+        <tr>
+            <th style="width: 40%;">Field</th>
+            <th>What to Enter</th>
+        </tr>
+        <tr>
+            <td><strong>Repository name</strong></td>
+            <td><code>shl-dashboard</code></td>
+        </tr>
+        <tr>
+            <td><strong>Description</strong></td>
+            <td><code>Sonic Healthcare (SHL.AX) Financial Analysis Dashboard</code></td>
+        </tr>
+        <tr>
+            <td><strong>Public / Private</strong></td>
+            <td>Select <strong>Public</strong> (required for free hosting)</td>
+        </tr>
+        <tr>
+            <td><strong>Add a README file</strong></td>
+            <td>Leave <strong>UNCHECKED</strong></td>
+        </tr>
+    </table>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">3</span><span class="step-title">Create the Repository</span></p>
+    <ul>
+        <li>Scroll down</li>
+        <li>Click the green <strong>"Create repository"</strong> button</li>
+    </ul>
+</div>
+
+<div class="success-box">
+    <strong>Checkpoint:</strong> You should see a new page with "Quick setup" instructions. This means your repository was created successfully!
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="part3">Part 3: Upload Dashboard Files</h2>
+<p class="time-estimate">Time: 3 minutes</p>
+
+<div class="action-box">
+    <p><span class="step-number">1</span><span class="step-title">Click "Upload Files"</span></p>
+    <ul>
+        <li>On the repository page, look for the text that says:</li>
+        <li><em>"...or upload an existing file"</em></li>
+        <li>Click <strong>"uploading an existing file"</strong> (it's a blue link)</li>
+    </ul>
+    <div class="screenshot-placeholder">[Screenshot: Click "uploading an existing file" link]</div>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">2</span><span class="step-title">Open Your Dropbox Folder</span></p>
+    <ul>
+        <li>Open a <strong>new Finder window</strong> (on Mac) or <strong>File Explorer</strong> (on Windows)</li>
+        <li>Navigate to:</li>
+    </ul>
+    <div class="code-block">Dropbox → Side Mission Control → Stocks, Shares, ETF, Commodities → Research → Sonic Health Care → shl-dashboard</div>
+    <ul>
+        <li>You should see 3 files: <code>index.html</code>, <code>README.md</code>, and the guide files</li>
+    </ul>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">3</span><span class="step-title">Drag and Drop Files</span></p>
+    <ul>
+        <li>Select ALL files in the shl-dashboard folder</li>
+        <li><strong>Drag and drop</strong> them onto the GitHub upload area</li>
+        <li>Or click <strong>"choose your files"</strong> and select them manually</li>
+    </ul>
+    <div class="warning-box">
+        <strong>Important:</strong> Make sure you upload at least the <code>index.html</code> file - this is the main dashboard!
+    </div>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">4</span><span class="step-title">Commit the Files</span></p>
+    <ul>
+        <li>Scroll down to the <strong>"Commit changes"</strong> section</li>
+        <li>In the first text box, type: <code>Initial dashboard upload</code></li>
+        <li>Click the green <strong>"Commit changes"</strong> button</li>
+    </ul>
+</div>
+
+<div class="success-box">
+    <strong>Checkpoint:</strong> You should now see your files listed in the repository. Look for <code>index.html</code> in the file list.
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="part4">Part 4: Deploy to Vercel</h2>
+<p class="time-estimate">Time: 5 minutes</p>
+
+<div class="info-box">
+    <strong>What is Vercel?</strong><br>
+    Vercel is a free hosting service that will make your dashboard accessible via a public URL that you can share with colleagues.
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">1</span><span class="step-title">Go to Vercel</span></p>
+    <ul>
+        <li>Open a new browser tab</li>
+        <li>Go to: <strong>https://vercel.com</strong></li>
+    </ul>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">2</span><span class="step-title">Sign Up with GitHub</span></p>
+    <ul>
+        <li>Click <strong>"Sign Up"</strong> (top right corner)</li>
+        <li>Click <strong>"Continue with GitHub"</strong></li>
+        <li>If prompted, click <strong>"Authorize Vercel"</strong> to allow access to your GitHub</li>
+    </ul>
+    <div class="screenshot-placeholder">[Screenshot: Click "Continue with GitHub"]</div>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">3</span><span class="step-title">Import Your Repository</span></p>
+    <ul>
+        <li>After signing in, you'll see the Vercel dashboard</li>
+        <li>Click <strong>"Add New..."</strong> button (or "Import Project")</li>
+        <li>Select <strong>"Project"</strong></li>
+    </ul>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">4</span><span class="step-title">Select Your Repository</span></p>
+    <ul>
+        <li>You'll see a list of your GitHub repositories</li>
+        <li>Find <strong>shl-dashboard</strong> in the list</li>
+        <li>Click the <strong>"Import"</strong> button next to it</li>
+    </ul>
+    <div class="warning-box">
+        <strong>Don't see your repository?</strong><br>
+        Click "Adjust GitHub App Permissions" and make sure Vercel has access to your repositories.
+    </div>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">5</span><span class="step-title">Configure Project Settings</span></p>
+    <ul>
+        <li><strong>Project Name:</strong> Leave as <code>shl-dashboard</code> (or change if you prefer)</li>
+        <li><strong>Framework Preset:</strong> Select <strong>"Other"</strong></li>
+        <li><strong>Root Directory:</strong> Leave as <code>./</code> (default)</li>
+        <li>Leave all other settings as default</li>
+    </ul>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">6</span><span class="step-title">Deploy!</span></p>
+    <ul>
+        <li>Click the <strong>"Deploy"</strong> button</li>
+        <li>Wait 30-60 seconds for deployment to complete</li>
+        <li>You'll see a success screen with confetti!</li>
+    </ul>
+</div>
+
+<div class="success-box">
+    <strong>Congratulations!</strong> Your dashboard is now live on the internet!
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="part5">Part 5: Share Your Dashboard</h2>
+<p class="time-estimate">Time: 1 minute</p>
+
+<div class="action-box">
+    <p><span class="step-number">1</span><span class="step-title">Get Your Dashboard URL</span></p>
+    <ul>
+        <li>After deployment, Vercel shows your live URL</li>
+        <li>It will look like one of these:</li>
+    </ul>
+    <div class="code-block">https://shl-dashboard.vercel.app</div>
+    <p style="text-align: center;">OR</p>
+    <div class="code-block">https://shl-dashboard-yourusername.vercel.app</div>
+    <ul>
+        <li>Click the URL to open your dashboard in a new tab</li>
+        <li>Verify everything looks correct</li>
+    </ul>
+</div>
+
+<div class="action-box">
+    <p><span class="step-number">2</span><span class="step-title">Copy and Share the URL</span></p>
+    <ul>
+        <li>Copy the URL from your browser's address bar</li>
+        <li>Share via email, Slack, Teams, or any messaging app</li>
+        <li>Anyone with the link can view your dashboard!</li>
+    </ul>
+</div>
+
+<div class="success-box" style="text-align: center; padding: 30px;">
+    <h3 style="color: #059669; margin-top: 0;">Your Dashboard is Live!</h3>
+    <p style="font-size: 14pt;"><strong>Share this URL with your colleagues:</strong></p>
+    <div style="background: white; padding: 15px; border-radius: 8px; font-size: 16pt; font-family: Consolas, monospace; margin: 15px 0;">
+        https://shl-dashboard.vercel.app
+    </div>
+    <p style="color: #6b7280; font-size: 10pt;">(Your actual URL may be slightly different - copy from Vercel)</p>
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="trouble">Troubleshooting</h2>
+
+<table>
+    <tr>
+        <th style="width: 40%;">Problem</th>
+        <th>Solution</th>
+    </tr>
+    <tr>
+        <td><strong>Repository not showing in Vercel</strong></td>
+        <td>
+            <ol>
+                <li>Click "Adjust GitHub App Permissions"</li>
+                <li>Select "All repositories" or specifically enable shl-dashboard</li>
+                <li>Click "Save"</li>
+            </ol>
+        </td>
+    </tr>
+    <tr>
+        <td><strong>Page shows "404 Not Found"</strong></td>
+        <td>
+            <ul>
+                <li>Make sure your main file is named exactly <code>index.html</code> (lowercase)</li>
+                <li>Re-upload the file if needed</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td><strong>Charts not displaying</strong></td>
+        <td>
+            <ul>
+                <li>Clear your browser cache (Cmd+Shift+R on Mac, Ctrl+Shift+R on Windows)</li>
+                <li>Check that you have internet connection (charts load from CDN)</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td><strong>Deployment failed</strong></td>
+        <td>
+            <ul>
+                <li>Check that index.html exists in your repository</li>
+                <li>Try clicking "Redeploy" in Vercel</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td><strong>Changes not showing after update</strong></td>
+        <td>
+            <ul>
+                <li>Vercel auto-deploys changes - wait 1-2 minutes</li>
+                <li>Clear browser cache and refresh</li>
+            </ul>
+        </td>
+    </tr>
+</table>
+
+<h3>How to Update Your Dashboard Later</h3>
+<div class="info-box">
+    <ol>
+        <li>Go to your GitHub repository: <code>github.com/YOUR_USERNAME/shl-dashboard</code></li>
+        <li>Click on <code>index.html</code></li>
+        <li>Click the <strong>pencil icon</strong> (Edit) in the top right</li>
+        <li>Make your changes</li>
+        <li>Click <strong>"Commit changes"</strong></li>
+        <li>Vercel will automatically redeploy within 1 minute!</li>
+    </ol>
+</div>
+
+<hr>
+
+<h2>Quick Reference Card</h2>
+
+<table>
+    <tr>
+        <th>Resource</th>
+        <th>URL</th>
+    </tr>
+    <tr>
+        <td>Your Live Dashboard</td>
+        <td><code>https://shl-dashboard.vercel.app</code></td>
+    </tr>
+    <tr>
+        <td>GitHub Repository</td>
+        <td><code>https://github.com/YOUR_USERNAME/shl-dashboard</code></td>
+    </tr>
+    <tr>
+        <td>Vercel Dashboard</td>
+        <td><code>https://vercel.com/dashboard</code></td>
+    </tr>
+    <tr>
+        <td>Source Files (Local)</td>
+        <td><code>Dropbox/.../Sonic Health Care/shl-dashboard/</code></td>
+    </tr>
+</table>
+
+<div class="footer">
+    <p><strong>SHL Dashboard Deployment Guide</strong></p>
+    <p>Created by Claude Code | January 22, 2026</p>
+    <p>For technical support: GitHub Docs (docs.github.com) | Vercel Docs (vercel.com/docs)</p>
+</div>
+
+</body>
+</html>
